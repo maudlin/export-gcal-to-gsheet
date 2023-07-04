@@ -49,7 +49,6 @@
  *       and then specify the frequency (hourly, daily, etc.) and time of day as per your preference.
  */
 
-
 function export_gcal_to_gsheet(){
     // Define default start and end dates
     var startDate = getFirstDayOfPrevMonth();
@@ -76,20 +75,24 @@ function export_gcal_to_gsheet(){
     }
 
     // Define headers for the spreadsheet
-    var header = [["Week day", "Date", "Event Title", "Event Location"]];
-    var range = sheet.getRange(5, 1, 1, 4);
+    var header = [["Week day", "Date", "Start Time", "End Time", "Duration (hours)", "Event Title", "Event Location"]];
+    var range = sheet.getRange(5, 1, 1, 7);
     range.setValues(header);
 
     // Loop over events and add them to the spreadsheet
     for (var i = 0; i < events.length; i++) {
         var row = i + 6; // Start from row 6 to leave room for headers
+        var duration = (events[i].getEndTime().getTime() - events[i].getStartTime().getTime()) / 3600000; // Calculate duration in hours
         var details = [[ 
-            getWeekDay(events[i].getStartTime()),  
-            events[i].getStartTime(), 
+            getWeekDay(events[i].getStartTime()),
+            events[i].getStartTime(),
+            events[i].getStartTime().toLocaleTimeString(), 
+            events[i].getEndTime().toLocaleTimeString(), 
+            duration.toFixed(2), 
             events[i].getTitle(), 
             events[i].getLocation() 
         ]];
-        var range = sheet.getRange(row, 1, 1, 4);
+        var range = sheet.getRange(row, 1, 1, 7);
         range.setValues(details);
     }
 }
